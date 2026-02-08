@@ -1,0 +1,2 @@
+# Ecology Simulation
+This program was built as the completion of a biology course. It is designed to simulate ecological interactions between bobcats, brush rabbits, and sagebrush. It is in active development as of early 2026.

@@ -117,6 +117,7 @@ def ZoomIn(event):
 	visible_terrain //= 2
 	view_offset_x = GetClickLocationX(event)
 	view_offset_y = GetClickLocationY(event)
+	#test = Object(GetClickLocationX(event), GetClickLocationY(event), 64, "red")
 	UpdateImage()
 
 def ResetZoom(event):
@@ -241,11 +242,13 @@ class Rabbit(Animal):
 		this.reproduction -= 1
 		if this.reproduction == 120:
 			den = Den(this.x, this.y)
+			print("Den created")
 			this.reproduction -= 1
 	def targetReached(this):
-		if this.targetobject.__class__.__name__ == "Sagebrush":
+		if this.targetobject.__class__.__name__ == "Sagebrush" and this.targetobject.radius == 3:
 			this.targetobject.radius = 2
 			this.food += 120
+			print("Sagebrush eaten")
 
 class Den(Object):
 	def __init__(this, x, y):
@@ -256,6 +259,7 @@ class Den(Object):
 		if this.growthremaining <= 0:
 			for i in range(0, random.randint(4, 8)):
 				newrabbit = Rabbit(this.x, this.y)
+			print("Den finished")
 			objects.remove(this)
 
 class Bobcat(Animal):
@@ -291,7 +295,8 @@ class Bobcat(Animal):
 			bobcat = Bobcat(this.x, this.y)
 			this.reproduction -= 1
 	def targetReached(this):
-		if this.targetobject.__class__.__name__ == "Rabbit":
+		if this.targetobject.__class__.__name__ == "Rabbit" and this.targetobject in objects:
+			print("Rabbit eaten")
 			objects.remove(this.targetobject)
 			this.food += 240
 
@@ -310,10 +315,10 @@ for i in range(0, int(input("Sagebrush plants: "))): # Standard: 4096
 
 # Ecology Setup (animals)
 
-for i in range(0, 1024):
+for i in range(0, 512):
 	nextObject = Rabbit(random.randint(0, GRID_SIZE), random.randint(0, GRID_SIZE))
-#for i in range(0, 256):
-#	nextObject = Bobcat(random.randint(0, GRID_SIZE), random.randint(0, GRID_SIZE))
+for i in range(0, 128):
+	nextObject = Bobcat(random.randint(0, GRID_SIZE), random.randint(0, GRID_SIZE))
 
 # Central Clock (yes it deserves its own section)
 
@@ -337,20 +342,20 @@ def tick():
 	window.after(300 * head, tick)
 
 # Graphics Toggle
-head = False
+head = True
 def toggleGraphics():
 	global head
 	head = not head
 
 # Data Recorder Configuration
 recorder = False
-targetFile = input("Enter target CSV file: ")
-if targetFile != "":
-	recorder = True
-	record = []
+#targetFile = input("Enter target CSV file: ")
+#if targetFile != "":
+#	recorder = True
+#	record = []
 def Dump():
 	for i in record:
-		print(i.values(),sep=",")
+		print(*i.values(),sep=",")
 	file = open(targetFile, "w")
 	writer = csv.DictWriter(file, ("Rabbit", "Bobcat", "Den"))
 	writer.writeheader()
@@ -370,8 +375,9 @@ canvas.bind("e", Dump)
 canvas.bind("r", toggleGraphics)
 
 ResetZoom(None)
-window.after(0, tick)
-try:
-    window.mainloop()
-except KeyboardInterrupt:
-    Dump()
+window.after(300, tick)
+window.mainloop()
+#try:
+#    
+#except KeyboardInterrupt:
+#    Dump()
